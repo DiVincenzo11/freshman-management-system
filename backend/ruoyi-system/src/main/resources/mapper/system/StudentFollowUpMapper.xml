@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StudentFollowUpMapper">
+
+    <resultMap type="StudentFollowUp" id="StudentFollowUpResult">
+        <result property="followId"    column="follow_id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="followImage"    column="follow_image"    />
+        <result property="followContent"    column="follow_content"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStudentFollowUpVo">
+        select follow_id, student_id, follow_image, follow_content, create_time, update_time from student_follow_up
+    </sql>
+
+    <select id="selectStudentFollowUpList" parameterType="StudentFollowUp" resultMap="StudentFollowUpResult">
+        <include refid="selectStudentFollowUpVo"/>
+        <where>
+            <if test="studentId != null "> and student_id = #{studentId}</if>
+            <if test="followImage != null  and followImage != ''"> and follow_image = #{followImage}</if>
+            <if test="followContent != null  and followContent != ''"> and follow_content = #{followContent}</if>
+        </where>
+    </select>
+
+    <select id="selectStudentFollowUpByFollowId" parameterType="Long" resultMap="StudentFollowUpResult">
+        <include refid="selectStudentFollowUpVo"/>
+        where follow_id = #{followId}
+    </select>
+
+    <insert id="insertStudentFollowUp" parameterType="StudentFollowUp" useGeneratedKeys="true" keyProperty="followId">
+        insert into student_follow_up
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">student_id,</if>
+            <if test="followImage != null">follow_image,</if>
+            <if test="followContent != null">follow_content,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="followImage != null">#{followImage},</if>
+            <if test="followContent != null">#{followContent},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStudentFollowUp" parameterType="StudentFollowUp">
+        update student_follow_up
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentId != null">student_id = #{studentId},</if>
+            follow_image = #{followImage},
+            <if test="followContent != null">follow_content = #{followContent},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where follow_id = #{followId}
+    </update>
+
+    <delete id="deleteStudentFollowUpByFollowId" parameterType="Long">
+        delete from student_follow_up where follow_id = #{followId}
+    </delete>
+
+    <delete id="deleteStudentFollowUpByFollowIds" parameterType="String">
+        delete from student_follow_up where follow_id in
+        <foreach item="followId" collection="array" open="(" separator="," close=")">
+            #{followId}
+        </foreach>
+    </delete>
+</mapper>

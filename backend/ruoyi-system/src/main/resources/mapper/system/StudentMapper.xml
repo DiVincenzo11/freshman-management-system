@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StudentMapper">
+
+    <resultMap type="Student" id="StudentResult">
+        <result property="studentId"    column="student_id"    />
+        <result property="studentName"    column="student_name"    />
+        <result property="studentNum"    column="student_num"    />
+        <result property="grades"    column="grades"    />
+        <result property="duties"    column="duties"    />
+        <result property="sex"    column="sex"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="nativePlace"    column="native_place"    />
+        <result property="nation"    column="nation"    />
+        <result property="dormitory"    column="dormitory"    />
+        <result property="face"    column="face"    />
+        <result property="phone"    column="phone"    />
+        <result property="oicq"    column="oicq"    />
+        <result property="weChat"    column="we_chat"    />
+        <result property="address"    column="address"    />
+        <result property="emergencyName1"    column="emergency_name1"    />
+        <result property="emergencyRelation1"    column="emergency_relation1"    />
+        <result property="emergencyWork1"    column="emergency_work1"    />
+        <result property="emergencyPhone1"    column="emergency_phone1"    />
+        <result property="emergencyName2"    column="emergency_name2"    />
+        <result property="emergencyRelation2"    column="emergency_relation2"    />
+        <result property="emergencyWork2"    column="emergency_work2"    />
+        <result property="emergencyPhone2"    column="emergency_phone2"    />
+        <result property="photo"    column="photo"    />
+        <result property="lifePhoto"    column="life_photo"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="ismark" column="ismark"/>
+        <result property="follow" column="follow"/>
+        <result property="religion" column="religion"/>
+        <collection property="markList" column="{studentId=student_id}" javaType="ArrayList"  ofType="StudentMark" select="com.ruoyi.system.mapper.StudentMarkMapper.selectStudentMarkList"/>
+    </resultMap>
+
+
+    <sql id="selectStudentVo">
+        select s.student_id, s.student_name, s.student_num, s.grades, s.duties, s.sex, s.birthday, s.id_card,
+         s.native_place, s.nation, s.dormitory, s.face, s.phone, s.oicq,
+          s.we_chat, s.address, s.emergency_name1, s.emergency_relation1,
+          s.emergency_work1, s.emergency_phone1, s.emergency_name2,
+           s.emergency_relation2, s.emergency_work2, s.emergency_phone2,
+            s.photo, s.life_photo, s.create_time, update_time,s.ismark,s.follow,
+            c.child_menu_name,c.child_menu_class,s.religion
+             from student s join child_menu c on s.grades=c.child_menu_name
+    </sql>
+    <sql id="selectStudentVo1">
+        select student_id, student_name, student_num, grades, duties, sex, birthday, id_card,
+        native_place, nation, dormitory, face, phone, oicq,
+        we_chat, address, emergency_name1, emergency_relation1,
+        emergency_work1, emergency_phone1, emergency_name2,
+        emergency_relation2, emergency_work2, emergency_phone2,
+        photo, life_photo, create_time, update_time,ismark,follow,religion
+        from student
+    </sql>
+
+    <select id="selectStudentList" parameterType="Student" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        <where>
+            <if test="studentName != null  and studentName != ''"> and student_name like concat('%', #{studentName}, '%')</if>
+            <if test="studentNum != null  and studentNum != ''"> and student_num like concat('%', #{studentNum}, '%')</if>
+            <if test="grades != null "> and grades = #{grades}</if>
+            <if test="duties != null "> and duties = #{duties}</if>
+            <if test="sex != null "> and sex = #{sex}</if>
+            <if test="dormitory != null  and dormitory != ''"> and dormitory like concat('%', #{dormitory}, '%')</if>
+            <if test="ismark!=null and ismark!=''">and ismark like concat('%', #{ismark}, '%')</if>
+            <if test="follow!=null and follow!=''">and follow=#{follow}</if>
+            AND c.child_menu_class='Grades'
+            <if test="params.isAdmin != true">AND c.child_menu_id IN
+            (SELECT child_menu_id FROM sys_role_child_menu where role_id IN <foreach collection="params.roleIds" item="rid" open="(" separator="," close=")">#{rid}</foreach>)</if>
+        </where>
+    </select>
+
+    <select id="selectDormitory" parameterType="Student" resultType="Student">
+        select dormitory from student
+        <where>
+            <if test="studentName != null  and studentName != ''"> and student_name=#{studentName}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card=#{idCard}</if>
+        </where>
+    </select>
+
+    <select id="selectStudentByStudentId" parameterType="Long" resultMap="StudentResult">
+        <include refid="selectStudentVo1"/>
+        where student_id = #{studentId}
+    </select>
+
+    <insert id="insertStudent" parameterType="Student" useGeneratedKeys="true" keyProperty="studentId">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentName != null and studentName != ''">student_name,</if>
+            <if test="studentNum != null and studentNum != ''">student_num,</if>
+            <if test="grades != null">grades,</if>
+            <if test="duties != null">duties,</if>
+            <if test="sex != null">sex,</if>
+            <if test="birthday != null">birthday,</if>
+            <if test="idCard != null and idCard != ''">id_card,</if>
+            <if test="nativePlace != null and nativePlace != ''">native_place,</if>
+            <if test="nation != null and nation != ''">nation,</if>
+            <if test="dormitory != null">dormitory,</if>
+            <if test="face != null">face,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="oicq != null">oicq,</if>
+            <if test="weChat != null">we_chat,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="emergencyName1 != null">emergency_name1,</if>
+            <if test="emergencyRelation1 != null">emergency_relation1,</if>
+            <if test="emergencyWork1 != null">emergency_work1,</if>
+            <if test="emergencyPhone1 != null">emergency_phone1,</if>
+            <if test="emergencyName2 != null">emergency_name2,</if>
+            <if test="emergencyRelation2 != null">emergency_relation2,</if>
+            <if test="emergencyWork2 != null">emergency_work2,</if>
+            <if test="emergencyPhone2 != null">emergency_phone2,</if>
+            <if test="photo != null">photo,</if>
+            <if test="lifePhoto != null">life_photo,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="ismark!=null">ismark,</if>
+            <if test="follow!=null">follow,</if>
+            <if test="religion!=null">religion,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentName != null and studentName != ''">#{studentName},</if>
+            <if test="studentNum != null and studentNum != ''">#{studentNum},</if>
+            <if test="grades != null">#{grades},</if>
+            <if test="duties != null">#{duties},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="birthday != null">#{birthday},</if>
+            <if test="idCard != null and idCard != ''">#{idCard},</if>
+            <if test="nativePlace != null and nativePlace != ''">#{nativePlace},</if>
+            <if test="nation != null and nation != ''">#{nation},</if>
+            <if test="dormitory != null">#{dormitory},</if>
+            <if test="face != null">#{face},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="oicq != null">#{oicq},</if>
+            <if test="weChat != null">#{weChat},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="emergencyName1 != null">#{emergencyName1},</if>
+            <if test="emergencyRelation1 != null">#{emergencyRelation1},</if>
+            <if test="emergencyWork1 != null">#{emergencyWork1},</if>
+            <if test="emergencyPhone1 != null">#{emergencyPhone1},</if>
+            <if test="emergencyName2 != null">#{emergencyName2},</if>
+            <if test="emergencyRelation2 != null">#{emergencyRelation2},</if>
+            <if test="emergencyWork2 != null">#{emergencyWork2},</if>
+            <if test="emergencyPhone2 != null">#{emergencyPhone2},</if>
+            <if test="photo != null">#{photo},</if>
+            <if test="lifePhoto != null">#{lifePhoto},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ismark!=null">#{ismark},</if>
+            <if test="follow!=null">#{follow},</if>
+            <if test="religion!=null">#{religion},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStudent" parameterType="Student">
+        update student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentName != null and studentName != ''">student_name = #{studentName},</if>
+            <if test="studentNum != null and studentNum != ''">student_num = #{studentNum},</if>
+            <if test="grades != null">grades = #{grades},</if>
+            <if test="duties != null">duties = #{duties},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="idCard != null and idCard != ''">id_card = #{idCard},</if>
+            <if test="nativePlace != null and nativePlace != ''">native_place = #{nativePlace},</if>
+            <if test="nation != null and nation != ''">nation = #{nation},</if>
+            <if test="dormitory != null">dormitory = #{dormitory},</if>
+            <if test="face != null">face = #{face},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="oicq != null">oicq = #{oicq},</if>
+            <if test="weChat != null">we_chat = #{weChat},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="emergencyName1 != null">emergency_name1 = #{emergencyName1},</if>
+            <if test="emergencyRelation1 != null">emergency_relation1 = #{emergencyRelation1},</if>
+            <if test="emergencyWork1 != null">emergency_work1 = #{emergencyWork1},</if>
+            <if test="emergencyPhone1 != null">emergency_phone1 = #{emergencyPhone1},</if>
+            <if test="emergencyName2 != null">emergency_name2 = #{emergencyName2},</if>
+            <if test="emergencyRelation2 != null">emergency_relation2 = #{emergencyRelation2},</if>
+            <if test="emergencyWork2 != null">emergency_work2 = #{emergencyWork2},</if>
+            <if test="emergencyPhone2 != null">emergency_phone2 = #{emergencyPhone2},</if>
+            <if test="photo != null">photo = #{photo},</if>
+            <if test="lifePhoto != null">life_photo = #{lifePhoto},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ismark != null">ismark = #{ismark},</if>
+            <if test="follow != null">follow = #{follow},</if>
+            <if test="religion!=null">religion=#{religion}</if>
+        </trim>
+        where student_id = #{studentId}
+    </update>
+
+    <delete id="deleteStudentByStudentId" parameterType="Long">
+        delete from student where student_id = #{studentId}
+    </delete>
+
+    <delete id="deleteStudentByStudentIds" parameterType="String">
+        delete from student where student_id in
+        <foreach item="studentId" collection="array" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+</mapper>
+

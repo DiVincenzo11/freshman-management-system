@@ -1,0 +1,12 @@
+**/target/
+**/node_modules/
+**/dist/
+**/.idea/
+**/unpackage/
+**/logs/
+**/data/
+**/.env.local
+**/.env.*.local
+**/application-local.*
+*.log
+.DS_Store

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ChildMenuMapper">
+
+    <resultMap type="ChildMenu" id="ChildMenuResult">
+        <result property="childMenuId"    column="child_menu_id"    />
+        <result property="childMenuClass"    column="child_menu_class"    />
+        <result property="childMenuName"    column="child_menu_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="childMenuType"    column="child_menu_type"    />
+        <result property="childMenuLabel" column="child_menu_label"/>
+    </resultMap>
+
+    <sql id="selectChildMenuVo">
+        select child_menu_id, child_menu_class, child_menu_name, order_num, child_menu_type,child_menu_label from child_menu
+    </sql>
+
+    <select id="selectChildMenuList" parameterType="ChildMenu" resultMap="ChildMenuResult">
+        <include refid="selectChildMenuVo"/>
+        <where>
+            <if test="childMenuClass != null  and childMenuClass != ''"> and child_menu_class = #{childMenuClass}</if>
+            <if test="childMenuName != null  and childMenuName != ''"> and child_menu_name like concat('%', #{childMenuName}, '%')</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="childMenuType != null "> and child_menu_type = #{childMenuType}</if>
+            <if test="childMenuLabel!=null">and child_menu_label=#{childMenuLabel}</if>
+        </where>
+        ORDER BY order_num
+    </select>
+
+    <select id="selectChildMenuByChildMenuId" parameterType="Long" resultMap="ChildMenuResult">
+        <include refid="selectChildMenuVo"/>
+        where child_menu_id = #{childMenuId}
+    </select>
+
+    <insert id="insertChildMenu" parameterType="ChildMenu" useGeneratedKeys="true" keyProperty="childMenuId">
+        insert into child_menu
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="childMenuClass != null">child_menu_class,</if>
+            <if test="childMenuName != null">child_menu_name,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="childMenuType != null">child_menu_type,</if>
+            <if test="childMenuLabel != null">child_menu_label,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="childMenuClass != null">#{childMenuClass},</if>
+            <if test="childMenuName != null">#{childMenuName},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="childMenuType != null">#{childMenuType},</if>
+            <if test="childMenuLabel != null">#{childMenuLabel},</if>
+        </trim>
+    </insert>
+
+    <update id="updateChildMenu" parameterType="ChildMenu">
+        update child_menu
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="childMenuClass != null">child_menu_class = #{childMenuClass},</if>
+            <if test="childMenuName != null">child_menu_name = #{childMenuName},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="childMenuType != null">child_menu_type = #{childMenuType},</if>
+            <if test="childMenuLabel != null">child_menu_label = #{childMenuLabel},</if>
+        </trim>
+        where child_menu_id = #{childMenuId}
+
+    </update>
+
+    <delete id="deleteChildMenuByChildMenuId" parameterType="Long">
+        delete from child_menu where child_menu_id = #{childMenuId}
+    </delete>
+
+    <delete id="deleteChildMenuByChildMenuIds" parameterType="String">
+        delete from child_menu where child_menu_id in
+        <foreach item="childMenuId" collection="array" open="(" separator="," close=")">
+            #{childMenuId}
+        </foreach>
+    </delete>
+</mapper>
