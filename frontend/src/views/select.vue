@@ -21,7 +21,7 @@
 							</el-input>
 						</el-form-item>
 						<el-form-item prop="idCard">
-							<el-input v-model="studentFrom.idCard" auto-complete="off" placeholder="请输入您的身份证号">
+							<el-input v-model="studentFrom.idCard" auto-complete="off" placeholder="请输入演示身份编号">
 								<svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
 							</el-input>
 						</el-form-item>
@@ -77,12 +77,12 @@
 					idCard: [{
 							required: true,
 							trigger: "blur",
-							message: "请输入您的身份证号"
+							message: "请输入演示身份编号"
 						},
 						{
-							min: 18,
-							max: 18,
-							message: '身份证号的长度必须为18位',
+							min: 1,
+							max: 64,
+							message: '请输入 1 至 64 位演示身份编号',
 							trigger: 'blur'
 						}
 					],
